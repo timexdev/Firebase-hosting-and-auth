@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+<style>
+    #addBtn{
+        color: white;
+        background-color: green;
+        padding: 5px 10px;
+        border:none
+
+    }
+</style>
+<body onload="getExistingTodos()">
+    <div>
+        <input id="inputtodo" type="text" placeholder="Enter Activities">
+        <button id="addBtn" onclick="addTodo()">Add Todo</button>
+        <button onclick="clearTodo()">Clear</button>
+        
+    </div>
+   
+    <div id="showBox">
+        
+    </div>
+
+    <script>
+        var todoArr = [];
+
+        function getExistingTodos(){
+            let localTodo = localStorage.getItem("todos")
+            if(localTodo){
+                todoArr = JSON.parse(localTodo);
+            }else{
+                todoArr = [];
+            }
+           
+
+            displaytoDo();
+            
+        }
+        function addTodo(){
+            let item = document.getElementById('inputtodo').value;
+            let todoObj = {item:item, date:new Date().toUTCString()}
+            todoArr.push(todoObj);
+            
+            document.getElementById('inputtodo').value = "";
+            
+            
+            displaytoDo();
+            updateLocalStorage();
+        }
+
+        function  updateLocalStorage(){
+            localStorage.setItem("todos", JSON.stringify(todoArr));
+        }
+
+        function displaytoDo(){
+            let todoContent = "";
+            for (let i=0; i < todoArr.length; i++){
+            
+            if(todoArr[i].done){
+                todoContent += `<div> ${todoArr[i].item} <button>Done</button></div>`
+            }else{
+                todoContent +=`<div> ${todoArr[i].item} <button onclick="markAsDone(${i})">Mark as done</button></div>`
+            }
+              
+               
+            }
+            
+            document.getElementById('showBox').innerHTML = todoContent;
+            
+        }
+
+        function pendingCount(){
+            let pending = 0;
+            let i;
+            for (i=0; i<todoArr.length; i++){
+                if(!todoArr[i].done){
+                    pending +=1
+                }
+            }
+        }
+
+        function clearTodo(){
+            todoArr.length = 0;
+            displaytoDo();
+        }
+
+        function markAsDone(i){
+            todoArr[i].done = true;
+            displaytoDo();
+        }
+    </script>
+</body>
+</html>
