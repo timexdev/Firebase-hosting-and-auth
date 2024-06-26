@@ -5,95 +5,60 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-<style>
-    #addBtn{
-        color: white;
-        background-color: green;
-        padding: 5px 10px;
-        border:none
 
+<body class="text-center">
+    <h1 class="mb-5">AUTHENTICATION PRACTICE</h1>
+    <button onclick="signInGoogle()" class="btn btn-outline-success">Sign in with google</button>
+    <div class="col-10" id="showInfo">
+
+    </div>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmhmbCYusS-E-lQACbLHC2fq-ZttYnawQ",
+      authDomain: "peter-practice.firebaseapp.com",
+      projectId: "peter-practice",
+      storageBucket: "peter-practice.appspot.com",
+      messagingSenderId: "418020511720",
+      appId: "1:418020511720:web:97d373cf8b6d9e652b9e5d"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const signInGoogle = () => {
+      signInWithPopup(auth, provider)
+      .then ((result) => {
+        // console.log(result);
+        const user = result.user;
+        console.log(user)
+        let myName = user.displayName;
+        let myEmail = user.email;
+        let myPhoto = user.photoURL
+
+
+        showInfo.innerHTML = `
+          <h1>${myName}</h1>
+          <p>${myEmail}</p>
+          <img src=${myPhoto} alt="profile picture"/>
+        `
+      })
+      .catch((error) => {
+        console.log(error)
+      })
     }
-</style>
-<body onload="getExistingTodos()">
-    <div>
-        <input id="inputtodo" type="text" placeholder="Enter Activities">
-        <button id="addBtn" onclick="addTodo()">Add Todo</button>
-        <button onclick="clearTodo()">Clear</button>
-        
-    </div>
-   
-    <div id="showBox">
-        
-    </div>
 
-    <script>
-        var todoArr = [];
+    window.signInGoogle = signInGoogle
+  </script>
 
-        function getExistingTodos(){
-            let localTodo = localStorage.getItem("todos")
-            if(localTodo){
-                todoArr = JSON.parse(localTodo);
-            }else{
-                todoArr = [];
-            }
-           
-
-            displaytoDo();
-            
-        }
-        function addTodo(){
-            let item = document.getElementById('inputtodo').value;
-            let todoObj = {item:item, date:new Date().toUTCString()}
-            todoArr.push(todoObj);
-            
-            document.getElementById('inputtodo').value = "";
-            
-            
-            displaytoDo();
-            updateLocalStorage();
-        }
-
-        function  updateLocalStorage(){
-            localStorage.setItem("todos", JSON.stringify(todoArr));
-        }
-
-        function displaytoDo(){
-            let todoContent = "";
-            for (let i=0; i < todoArr.length; i++){
-            
-            if(todoArr[i].done){
-                todoContent += `<div> ${todoArr[i].item} <button>Done</button></div>`
-            }else{
-                todoContent +=`<div> ${todoArr[i].item} <button onclick="markAsDone(${i})">Mark as done</button></div>`
-            }
-              
-               
-            }
-            
-            document.getElementById('showBox').innerHTML = todoContent;
-            
-        }
-
-        function pendingCount(){
-            let pending = 0;
-            let i;
-            for (i=0; i<todoArr.length; i++){
-                if(!todoArr[i].done){
-                    pending +=1
-                }
-            }
-        }
-
-        function clearTodo(){
-            todoArr.length = 0;
-            displaytoDo();
-        }
-
-        function markAsDone(i){
-            todoArr[i].done = true;
-            displaytoDo();
-        }
-    </script>
 </body>
 </html>
